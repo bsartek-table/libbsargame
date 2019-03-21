@@ -25,7 +25,7 @@ CFLAGS +=	-g3
 endif
 ifeq ($(TARGET),release)
 CPPFLAGS +=	-DRELEASE
-CFLAGS +=	-O2 -DRELEASE
+CFLAGS +=	-O2
 endif
 
 all:			$(BIN)
