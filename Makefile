@@ -11,7 +11,7 @@ DEPS :=		$(patsubst %.o,%.d,$(OBJS))
 CPPFLAGS :=	$(addprefix -I,$(INCSDIR)) -MMD
 CFLAGS :=	-W -Wall -Wcast-align -Winline -Wredundant-decls -Wshadow -Wpointer-arith \
 		-Wstrict-prototypes -Wuninitialized -Wwrite-strings -fPIC
-LDFLAGS :=	-shared
+LDFLAGS :=	-shared -lpigpio -lpthread -L. -lws2811
 
 TARGET ?=	debug
 

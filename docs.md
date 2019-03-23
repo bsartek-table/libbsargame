@@ -2,11 +2,12 @@
 
 | Prototype                                 | Help                                                                                                                 |
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `void lbg_init(void)`                     | Initialize library and dependencies                                                                                  |
+| `bool lbg_init(void)`                     | Initialize library and dependencies. Returns false if fails.                                                         |
 | `void lbg_exit(void)`                     | Gracefully stops library and dependencies                                                                            |
 | `bool lbg_get_screen(int32_t *screen)`    | Fill the first parameter with the screen represented as an int array                                                 |
 | `bool lbg_update_screen(int32_t *screen)` | Merge the current screen and the next screen                                                                         |
 | `bool lbg_poll_event(lbg_event_t *event)` | Pop the event on top of the event queue and stores it in the first parameter. Returns `false` if the queue is empty. |
+| `void lbg_perror(void)`                   | man perror                                                                                                           |
 
 # Macros
 
@@ -35,24 +36,30 @@
 
 ## Events
 
-| Name           | Help                                  |
-| -------------- | ------------------------------------- |
-| `LBG_P1_UP`    | First player's left joystick          |
-| `LBG_P1_RIGHT` | First player's right joystick         |
-| `LBG_P1_DOWN`  | First player's down joystick          |
-| `LBG_P1_LEFT`  | First player's left joystick          |
-| `LBG_P2_UP`    | Second player's left joystick         |
-| `LBG_P2_RIGHT` | Second player's right joystick        |
-| `LBG_P2_DOWN`  | Second player's down joystick         |
-| `LBG_P2_LEFT`  | Second player's left joystick         |
-| `LBG_P1_A`     | First player's A button (up-like)     |
-| `LBG_P1_B`     | First player's B button (right-like)  |
-| `LBG_P1_C`     | First player's C button (down-like)   |
-| `LBG_P1_D`     | First player's D button (left-like)   |
-| `LBG_P2_A`     | Second player's A button (up-like)    |
-| `LBG_P2_B`     | Second player's B button (right-like) |
-| `LBG_P2_C`     | Second player's C button (down-like)  |
-| `LBG_P2_D`     | Second player's D button (left-like)  |
+| Name           | Help                           |
+| -------------- | ------------------------------ |
+| `LBG_P1_UP`    | First player's left joystick   |
+| `LBG_P1_RIGHT` | First player's right joystick  |
+| `LBG_P1_DOWN`  | First player's down joystick   |
+| `LBG_P1_LEFT`  | First player's left joystick   |
+| `LBG_P2_UP`    | Second player's left joystick  |
+| `LBG_P2_RIGHT` | Second player's right joystick |
+| `LBG_P2_DOWN`  | Second player's down joystick  |
+| `LBG_P2_LEFT`  | Second player's left joystick  |
+| `LBG_P1_A`     | First player's A button        |
+| `LBG_P1_B`     | First player's B button        |
+| `LBG_P2_A`     | Second player's A button       |
+| `LBG_P2_B`     | Second player's B button       |
+
+## Errors
+
+| Name                     | Help                                |
+| ------------------------ | ----------------------------------- |
+| `LBG_ERRNO_GPIO_INIT`    | Failed to initialize GPIO pins      |
+| `LBG_ERRNO_GPIO_SETMODE` | Failed to set INPUT mode on pin %d  |
+| `LBG_ERRNO_LED_INIT`     | Failed to initialize LEDs           |
+| `LBG_ERRNO_SIGACTION`    | Failed to setup signal handlers: %s |
+| `LBG_ERRNO_SUCCESS`      | Success                             |
 
 # Types
 
