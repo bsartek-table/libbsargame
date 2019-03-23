@@ -25,6 +25,7 @@ bool lbg_init(void) {
     /* Initialize LEDs */
     if (ws2811_init(&LED_STRIP) != WS2811_SUCCESS) {
         lbg_errno = LBG_ERRNO_LED_INIT;
+        gpioTerminate();
         return false;
     }
 
@@ -34,6 +35,8 @@ bool lbg_init(void) {
         sigaction(SIGTERM, &sa, NULL) == -1) {
         lbg_errno = LBG_ERRNO_SIGACTION;
         lbg_errno_details.s = strerror(errno);
+        gpioTerminate();
+        ws2811_fini(&LED_STRIP);
         return false;
     }
 
