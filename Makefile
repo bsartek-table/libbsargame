@@ -44,4 +44,4 @@ docs:;			@doxygen Doxyfile
 
 -include $(DEPS)
 
-.PHONY: all clean
+.PHONY: all clean docs
