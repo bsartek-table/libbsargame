@@ -40,6 +40,7 @@ $(BUILDDIR)/%.o:	$(SRCSDIR)/%.c | $(BUILDDIR)
 $(BUILDDIR):;		@mkdir -vp $(BUILDDIR)
 
 clean:;			@rm -vrf $(BUILDDIR)
+docs:;			@doxygen Doxyfile
 
 -include $(DEPS)
 
