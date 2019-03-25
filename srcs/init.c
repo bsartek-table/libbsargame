@@ -33,7 +33,6 @@ lbg_gpio_pin_t ALL_PINS[] = {
 lbg_event_t ALL_EVENTS[] = {
     LBG_P1_A, LBG_P1_B, LBG_P1_UP, LBG_P1_RIGHT, LBG_P1_DOWN, LBG_P1_LEFT, -1,
 };
-/** @endcod */
 
 ws2811_t LED_STRIP = {
     .freq = WS2811_TARGET_FREQ,
@@ -57,6 +56,7 @@ ws2811_t LED_STRIP = {
                 },
         },
 };
+/** @endcond */
 
 static bool init_gpios(void) {
     if (gpioInitialise() == PI_INIT_FAILED) {
