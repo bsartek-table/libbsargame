@@ -83,16 +83,6 @@ typedef enum lbg_errno_e {
 } lbg_errno_t;
 
 /**
- * Error strings
- */
-const char *LBG_ERR_STRS[] = {
-    "Failed to initialize GPIO pins\n",
-    "Failed to set INPUT mode on pin %d\n",
-    "Failed to initialize LEDs\n",
-    "Success",
-};
-
-/**
  * Initialize library and dependencies. Must be called before anything else.
  *
  * @see lbg_exit
@@ -166,14 +156,6 @@ bool lbg_poll_event(lbg_event_t *event);
  */
 void lbg_perror(void);
 
-/** Hold the last error thrown. */
-lbg_errno_t lbg_errno = LBG_ERRNO_SUCCESS;
-/** Optional details about the last error. Can be an int i or a char array s.*/
-union {
-    int i;
-    char *s;
-} lbg_errno_details = {0};
-
 /** @cond NO_DOC */
 #define LBG_LED_GPIO_PIN 18
 #define LBG_LED_DMA 10
@@ -188,42 +170,15 @@ typedef enum lbg_gpio_pin_e {
     LBG_GPIO_P1_LEFT = 11,
 } lbg_gpio_pin_t;
 
-// TODO: add second player
-lbg_gpio_pin_t ALL_PINS[] = {
-    LBG_GPIO_P1_A,
-    LBG_GPIO_P1_B,
-    LBG_GPIO_P1_UP,
-    LBG_GPIO_P1_RIGHT,
-    LBG_GPIO_P1_DOWN,
-    LBG_GPIO_P1_LEFT,
-    -1,
+union lbg_errno_details_u {
+    int i;
+    char *s;
 };
 
-// TODO: add second player
-lbg_event_t ALL_EVENTS[] = {
-    LBG_P1_A, LBG_P1_B, LBG_P1_UP, LBG_P1_RIGHT, LBG_P1_DOWN, LBG_P1_LEFT, -1,
-};
+extern lbg_errno_t lbg_errno;
+extern union lbg_errno_details_u lbg_errno_details;
+extern const char *LBG_ERR_STRS[];
+extern lbg_gpio_pin_t ALL_PINS[];
+extern lbg_event_t ALL_EVENTS[];
 
-ws2811_t LED_STRIP = {
-    .freq = WS2811_TARGET_FREQ,
-    .dmanum = LBG_LED_DMA,
-    .channel =
-        {
-            [0] =
-                {
-                    .gpionum = LBG_LED_GPIO_PIN,
-                    .count = LBG_SIZE,
-                    .invert = 0,
-                    .brightness = 255,
-                    .strip_type = WS2811_STRIP_GBR,
-                },
-            [1] =
-                {
-                    .gpionum = 0,
-                    .count = 0,
-                    .invert = 0,
-                    .brightness = 0,
-                },
-        },
-};
 /** @endcond */

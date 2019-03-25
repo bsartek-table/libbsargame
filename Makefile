@@ -32,7 +32,7 @@ all:			$(BIN)
 			@cp -vf $< .
 
 $(BIN):			$(OBJS)
-			$(CC) $(OUTPUT_OPTION) $< $(LDFLAGS)
+			$(CC) $(OUTPUT_OPTION) $^ $(LDFLAGS)
 
 $(BUILDDIR)/%.o:	$(SRCSDIR)/%.c | $(BUILDDIR)
 			$(CC) -c $(OUTPUT_OPTION) $(CPPFLAGS) $(CFLAGS) $<
