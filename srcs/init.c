@@ -45,7 +45,7 @@ ws2811_t LED_STRIP = {
                     .count = LBG_SIZE,
                     .invert = 0,
                     .brightness = 255,
-                    .strip_type = WS2811_STRIP_GBR,
+                    .strip_type = WS2811_STRIP_GRB,
                 },
             [1] =
                 {
@@ -81,6 +81,11 @@ static bool init_leds(void) {
         gpioTerminate();
         return false;
     }
+
+    for (int i = 0; i < LBG_SIZE; i++) {
+        LED_STRIP.channel[0].leds[i] = 0;
+    }
+
     return true;
 }
 

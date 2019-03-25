@@ -13,15 +13,16 @@
 /** @cond NO_DOC */
 #if defined(DEBUG) || defined(RELEASE)
 #else
-#define DEBUG
+#define DEBUG 1
 #endif
 /** @endcond */
 
-#define LBG_WIDTH 13                      /*!< Screen's width */
-#define LBG_HEIGHT 21                     /*!< Screen's height */
+#define LBG_WIDTH (13)                    /*!< Screen's width */
+#define LBG_HEIGHT (21)                   /*!< Screen's height */
 #define LBG_SIZE (LBG_HEIGHT * LBG_WIDTH) /*!< Screen's size */
-#define LBG_FRAMERATE 20                  /*!< Screen's framerate */
-#define LBG_MAX_EVENTS 60 /*!< Maximum number of events stored in the queue */
+#define LBG_FRAMERATE (20)                /*!< Screen's framerate */
+#define LBG_MAX_EVENTS                                                         \
+    (1000) /*!< Maximum number of events stored in the queue */
 
 /**
  * Debug macro
@@ -162,11 +163,11 @@ void lbg_perror(void);
 
 // TODO: check pins
 typedef enum lbg_gpio_pin_e {
-    LBG_GPIO_P1_A = 17,
-    LBG_GPIO_P1_B = 27,
-    LBG_GPIO_P1_UP = 10,
-    LBG_GPIO_P1_RIGHT = 9,
-    LBG_GPIO_P1_DOWN = 5,
+    LBG_GPIO_P1_A = 27,
+    LBG_GPIO_P1_B = 17,
+    LBG_GPIO_P1_UP = 25,
+    LBG_GPIO_P1_RIGHT = 10,
+    LBG_GPIO_P1_DOWN = 9,
     LBG_GPIO_P1_LEFT = 11,
 } lbg_gpio_pin_t;
 
@@ -180,5 +181,6 @@ extern union lbg_errno_details_u lbg_errno_details;
 extern const char *LBG_ERR_STRS[];
 extern lbg_gpio_pin_t ALL_PINS[];
 extern lbg_event_t ALL_EVENTS[];
+extern ws2811_t LED_STRIP;
 
 /** @endcond */

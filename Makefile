@@ -20,11 +20,11 @@ $(error "target" must have the value "release" or "debug")
 endif
 
 ifeq ($(TARGET),debug)
-CPPFLAGS +=	-DDEBUG
+CPPFLAGS +=	-DDEBUG=1
 CFLAGS +=	-g3
 endif
 ifeq ($(TARGET),release)
-CPPFLAGS +=	-DRELEASE
+CPPFLAGS +=	-DRELEASE=1
 CFLAGS +=	-O2
 endif
 

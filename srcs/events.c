@@ -11,19 +11,26 @@ static struct {
 
 static void push_event(lbg_event_t evt) {
     if (eventQ.count < LBG_MAX_EVENTS) {
-        if (eventQ.rear < LBG_MAX_EVENTS) {
-            eventQ.q[++eventQ.rear] = evt;
-            eventQ.count++;
+        if (eventQ.rear == LBG_MAX_EVENTS - 1) {
+            eventQ.rear = -1;
         }
+
+        eventQ.q[++eventQ.rear] = evt;
+        eventQ.count++;
     }
 }
 
 static lbg_event_t pop_event(void) {
+    lbg_event_t evt = eventQ.q[eventQ.front++];
+
+    if (eventQ.front == LBG_MAX_EVENTS) {
+        eventQ.front = 0;
+    }
+
     eventQ.count--;
-    return eventQ.q[eventQ.front++];
+    return evt;
 }
 
-// TODO: Keep emitting event until level changes
 static void gpioAlertF(int gpio, __attribute__((unused)) int level,
                        __attribute__((unused)) uint32_t tick) {
     int i;
