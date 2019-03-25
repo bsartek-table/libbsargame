@@ -1,9 +1,6 @@
 /** @file */
 
 #include <errno.h>
-#include <signal.h>
-
-#include <pigpio.h>
 
 #include "bsargame.h"
 

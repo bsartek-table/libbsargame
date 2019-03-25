@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <pigpio.h>
 #include <ws2811.h>
 
 /** @cond NO_DOC */
@@ -20,6 +21,7 @@
 #define LBG_HEIGHT 21                     /*!< Screen's height */
 #define LBG_SIZE (LBG_HEIGHT * LBG_WIDTH) /*!< Screen's size */
 #define LBG_FRAMERATE 20                  /*!< Screen's framerate */
+#define LBG_MAX_EVENTS 60 /*!< Maximum number of events stored in the queue */
 
 /**
  * Debug macro
@@ -54,40 +56,41 @@ typedef enum lbg_color_e {
  * Available events
  */
 typedef enum lbg_event_e {
+    LBG_P1_A /*!< First player's A button */,
+    LBG_P1_B /*!< First player's B button */,
     LBG_P1_UP /*!< First player's UP joystick */,
     LBG_P1_RIGHT /*!< First player's RIGHT joystick */,
     LBG_P1_DOWN /*!< First player's DOWN joystick */,
     LBG_P1_LEFT /*!< First player's LEFT joystick */,
+    LBG_P2_A /*!< Second player's A button */,
+    LBG_P2_B /*!< Second player's B button */,
     LBG_P2_UP /*!< Second player's UP joystick */,
     LBG_P2_RIGHT /*!< Second player's RIGHT joystick */,
     LBG_P2_DOWN /*!< Second player's DOWN joystick */,
     LBG_P2_LEFT /*!< Second player's LEFT joystick */,
-    LBG_P1_A /*!< First player's A button */,
-    LBG_P1_B /*!< First player's B button */,
-    LBG_P2_A /*!< Second player's A button */,
-    LBG_P2_B /*!< Second player's B button */,
 } lbg_event_t;
 
 /**
  * Errors
+ *
+ * @see LBG_ERR_STRS
  */
 typedef enum lbg_errno_e {
     LBG_ERRNO_GPIO_INIT /*!< Failed to initialize GPIO pins */,
     LBG_ERRNO_GPIO_SETMODE /*!< Failed to set INPUT mode on pin %%d */,
     LBG_ERRNO_LED_INIT /*!< Failed to initialize LEDs */,
-    LBG_ERRNO_SIGACTION /*!< Failed to setup signal handlers: %%s */,
     LBG_ERRNO_SUCCESS /*!< Success */
 } lbg_errno_t;
 
-/** @cond NO_DOC */
+/**
+ * Error strings
+ */
 const char *LBG_ERR_STRS[] = {
     "Failed to initialize GPIO pins\n",
     "Failed to set INPUT mode on pin %d\n",
     "Failed to initialize LEDs\n",
-    "Failed to setup signal handlers: %s\n",
     "Success",
 };
-/** @endcond */
 
 /**
  * Initialize library and dependencies. Must be called before anything else.
@@ -185,6 +188,7 @@ typedef enum lbg_gpio_pin_e {
     LBG_GPIO_P1_LEFT = 11,
 } lbg_gpio_pin_t;
 
+// TODO: add second player
 lbg_gpio_pin_t ALL_PINS[] = {
     LBG_GPIO_P1_A,
     LBG_GPIO_P1_B,
@@ -193,6 +197,11 @@ lbg_gpio_pin_t ALL_PINS[] = {
     LBG_GPIO_P1_DOWN,
     LBG_GPIO_P1_LEFT,
     -1,
+};
+
+// TODO: add second player
+lbg_event_t ALL_EVENTS[] = {
+    LBG_P1_A, LBG_P1_B, LBG_P1_UP, LBG_P1_RIGHT, LBG_P1_DOWN, LBG_P1_LEFT, -1,
 };
 
 ws2811_t LED_STRIP = {
