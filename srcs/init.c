@@ -9,18 +9,16 @@ lbg_errno_t lbg_errno = LBG_ERRNO_SUCCESS;
 /** Optional details about the last error. Can be an int i or a char array s.*/
 union lbg_errno_details_u lbg_errno_details = {0};
 
-/**
- * Error strings
- */
+/** Error strings */
 const char *LBG_ERR_STRS[] = {
     "Failed to initialize GPIO pins\n",
     "Failed to set INPUT mode on pin %d\n",
-    "Failed to initialize LEDs\n",
-    "Success",
+    "Failed to initialize LEDs: %s\n",
+    "Failed to render LEDs: %s\n",
+    "Success\n",
 };
 
 /** @cond NO_DOC */
-// TODO: add second player
 lbg_gpio_pin_t ALL_PINS[] = {
     LBG_GPIO_P1_A,
     LBG_GPIO_P1_B,
@@ -28,10 +26,19 @@ lbg_gpio_pin_t ALL_PINS[] = {
     LBG_GPIO_P1_RIGHT,
     LBG_GPIO_P1_DOWN,
     LBG_GPIO_P1_LEFT,
+    LBG_GPIO_P2_A,
+    LBG_GPIO_P2_B,
+    LBG_GPIO_P2_UP,
+    LBG_GPIO_P2_RIGHT,
+    LBG_GPIO_P2_DOWN,
+    LBG_GPIO_P2_LEFT,
     -1,
 };
+
 lbg_event_t ALL_EVENTS[] = {
-    LBG_P1_A, LBG_P1_B, LBG_P1_UP, LBG_P1_RIGHT, LBG_P1_DOWN, LBG_P1_LEFT, -1,
+    LBG_P1_A,    LBG_P1_B,    LBG_P1_UP, LBG_P1_RIGHT, LBG_P1_DOWN,
+    LBG_P1_LEFT, LBG_P2_A,    LBG_P2_B,  LBG_P2_UP,    LBG_P2_RIGHT,
+    LBG_P2_DOWN, LBG_P2_LEFT, -1,
 };
 
 ws2811_t LED_STRIP = {
@@ -76,8 +83,11 @@ static bool init_gpios(void) {
 }
 
 static bool init_leds(void) {
-    if (ws2811_init(&LED_STRIP) != WS2811_SUCCESS) {
+    ws2811_return_t ret;
+
+    if ((ret = ws2811_init(&LED_STRIP)) != WS2811_SUCCESS) {
         lbg_errno = LBG_ERRNO_LED_INIT;
+        lbg_errno_details.s = ws2811_get_return_t_str(ret);
         gpioTerminate();
         return false;
     }
