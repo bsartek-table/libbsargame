@@ -31,11 +31,12 @@ static lbg_event_t pop_event(void) {
     return evt;
 }
 
-static void gpioAlertF(int gpio, __attribute__((unused)) int level,
-                       __attribute__((unused)) uint32_t tick) {
+static void gpioAlertF(int gpio, int level, uint32_t tick) {
     int i;
 
-    if (level == 0) {
+    printf("gpio=%d lvl=%d tick=%u\n", gpio, level, tick);
+
+    if (level != 1) {
         return;
     }
 
@@ -52,6 +53,7 @@ static void gpioAlertF(int gpio, __attribute__((unused)) int level,
 
 static bool do_first_run(bool *first_run) {
     for (int i = 0; ALL_PINS[i] != (lbg_gpio_pin_t)-1; i++) {
+        // TODO: Test with gpioSetISRFunc?
         if (gpioSetAlertFunc(ALL_PINS[i], gpioAlertF) != 0) {
             return false;
         }
@@ -60,6 +62,10 @@ static bool do_first_run(bool *first_run) {
     return true;
 }
 
+// TODO:
+// Fix the poll_event: x_release and x_pressed events + dont use alertFunc
+// (should test setISRFunc)
+// epoll on gpioNotify handle?
 bool lbg_poll_event(lbg_event_t *event) {
     static bool first_run = true;
 

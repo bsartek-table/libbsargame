@@ -63,6 +63,8 @@ ws2811_t LED_STRIP = {
                 },
         },
 };
+
+uint32_t LED_MAP[LBG_SIZE] = {0};
 /** @endcond */
 
 static bool init_gpios(void) {
@@ -87,13 +89,25 @@ static bool init_leds(void) {
 
     if ((ret = ws2811_init(&LED_STRIP)) != WS2811_SUCCESS) {
         lbg_errno = LBG_ERRNO_LED_INIT;
-        lbg_errno_details.s = ws2811_get_return_t_str(ret);
+        lbg_errno_details.s = (char *)ws2811_get_return_t_str(ret);
         gpioTerminate();
         return false;
     }
 
     for (int i = 0; i < LBG_SIZE; i++) {
         LED_STRIP.channel[0].leds[i] = 0;
+    }
+
+    int i = 0;
+    for (int y = 0; y < LBG_HEIGHT; y++) {
+        for (int x = 0; x < LBG_WIDTH; x++) {
+            if (!(y % 2)) {
+                LED_MAP[i] = y * LBG_WIDTH + x;
+            } else {
+                LED_MAP[i] = y * LBG_WIDTH + (LBG_WIDTH - x - 1);
+            }
+            i++;
+        }
     }
 
     return true;

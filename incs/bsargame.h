@@ -113,13 +113,12 @@ void lbg_exit(void);
  *
  * @param screen An int32_t allocated array of size LBG_SCREEN_SIZE
  *
- * @returns bool
+ * @returns none
  */
-bool lbg_get_screen(int32_t *screen);
+void lbg_get_screen(int32_t *screen);
 
 /**
- * Will merge the current screen (displayed on the LEDs) and the new one
- * (passed as parameter) and render the new screen.
+ * Will update the screen with given parameters.
  *
  * @see lbg_get_screen
  * @see lbg_errno
@@ -133,7 +132,7 @@ bool lbg_get_screen(int32_t *screen);
 bool lbg_update_screen(int32_t *screen);
 
 /**
- * Will clear out the screen (set all LEDs to black LBG_BLACK).
+ * Will clear out the screen (set all LEDs to LBG_BLACK).
  *
  * @see lbg_errno
  * @see lbg_errno_details
@@ -195,4 +194,5 @@ extern const char *LBG_ERR_STRS[];
 extern lbg_gpio_pin_t ALL_PINS[];
 extern lbg_event_t ALL_EVENTS[];
 extern ws2811_t LED_STRIP;
+extern uint32_t LED_MAP[];
 /** @endcond */
