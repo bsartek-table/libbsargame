@@ -48,18 +48,14 @@ void lbg_get_screen(uint32_t *screen) {
 }
 
 void lbg_update_screen(uint32_t *screen) {
-    ws2811_led_t *leds = LED_STRIP.channel[0].leds;
-
     for (int i = 0; i < LBG_SIZE; i++) {
-        leds[LED_MAP[i]] = screen[i];
+        LED_STRIP.channel[0].leds[LED_MAP[i]] = screen[i];
     }
 }
 
 void lbg_clear_screen(void) {
-    uint32_t screen[LBG_SIZE];
+    uint32_t screen[LBG_SIZE] = {0};
 
-    lbg_get_screen(screen);
-    memset(screen, 0, LBG_SIZE);
     lbg_update_screen(screen);
 }
 
