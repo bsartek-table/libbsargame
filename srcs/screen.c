@@ -39,7 +39,7 @@ static void delay(uint32_t ms) {
     } while (e);
 }
 
-void lbg_get_screen(int32_t *screen) {
+void lbg_get_screen(uint32_t *screen) {
     ws2811_led_t *leds = LED_STRIP.channel[0].leds;
 
     for (int i = 0; i < LBG_SIZE; i++) {
@@ -47,13 +47,24 @@ void lbg_get_screen(int32_t *screen) {
     }
 }
 
-bool lbg_update_screen(int32_t *screen) {
-    ws2811_return_t ret;
+void lbg_update_screen(uint32_t *screen) {
     ws2811_led_t *leds = LED_STRIP.channel[0].leds;
 
     for (int i = 0; i < LBG_SIZE; i++) {
         leds[LED_MAP[i]] = screen[i];
     }
+}
+
+void lbg_clear_screen(void) {
+    uint32_t screen[LBG_SIZE];
+
+    lbg_get_screen(screen);
+    memset(screen, 0, LBG_SIZE);
+    lbg_update_screen(screen);
+}
+
+bool lbg_render(void) {
+    ws2811_return_t ret;
 
     int32_t now = get_ticks();
     int32_t d = ms_interval - (now - last_updated);
@@ -67,12 +78,4 @@ bool lbg_update_screen(int32_t *screen) {
 
     last_updated = get_ticks();
     return true;
-}
-
-bool lbg_clear_screen(void) {
-    int32_t screen[LBG_SIZE];
-
-    lbg_get_screen(screen);
-    memset(screen, 0, LBG_SIZE);
-    return lbg_update_screen(screen);
 }

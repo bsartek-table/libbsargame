@@ -31,7 +31,8 @@ static lbg_event_t pop_event(void) {
     return evt;
 }
 
-static void gpioAlertF(int gpio, int level, uint32_t tick) {
+static void gpioAlertF(int gpio, int level,
+                       __attribute__((unused)) uint32_t tick) {
     if (level == 2) {
         return;
     }

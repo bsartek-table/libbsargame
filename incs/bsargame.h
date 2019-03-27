@@ -97,11 +97,11 @@ void lbg_exit(void);
  * @see lbg_errno
  * @see lbg_errno_details
  *
- * @param screen An int32_t allocated array of size LBG_SCREEN_SIZE
+ * @param screen An uint32_t allocated array of size LBG_SCREEN_SIZE
  *
  * @returns none
  */
-void lbg_get_screen(int32_t *screen);
+void lbg_get_screen(uint32_t *screen);
 
 /**
  * Will update the screen with given parameters.
@@ -110,22 +110,28 @@ void lbg_get_screen(int32_t *screen);
  * @see lbg_errno
  * @see lbg_errno_details
  *
- * @param screen An int32_t array of size LBG_SCREEN_SIZE with desired
+ * @param screen An uint32_t array of size LBG_SCREEN_SIZE with desired
  * content.
  *
- * @returns bool
+ * @returns none
  */
-bool lbg_update_screen(int32_t *screen);
+void lbg_update_screen(uint32_t *screen);
+
+/**
+ * Will render the screen at the LBG_FRAMERATE framerate
+ * 
+ * @see lbg_update_screen
+ * 
+ * @returns none
+ */
+bool lbg_render(void);
 
 /**
  * Will clear out the screen (set all LEDs to LBG_BLACK).
  *
- * @see lbg_errno
- * @see lbg_errno_details
- *
- * @returns bool
+ * @returns none
  */
-bool lbg_clear_screen(void);
+void lbg_clear_screen(void);
 
 /**
  * Poll the next event on the event queue and stores it in the first
@@ -148,6 +154,16 @@ bool lbg_poll_event(lbg_event_t *event);
  * @returns none
  */
 void lbg_perror(void);
+
+/**
+ * Put a pixel at the given x and y
+ * 
+ * @param x
+ * @param y
+ * 
+ * @returns bool
+ */
+void lbg_draw_pixel(int x, int y, lbg_color_t color);
 
 #define LBG_LED_GPIO_PIN 18 /*!< The GPIO pin used for LEDs */
 #define LBG_LED_DMA 10      /*!< The DMA channel used for LEDs */
