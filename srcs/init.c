@@ -1,5 +1,6 @@
 /** @file */
 
+#include <time.h>
 #include <errno.h>
 
 #include "bsargame.h"
@@ -35,12 +36,6 @@ lbg_gpio_pin_t ALL_PINS[] = {
     -1,
 };
 
-lbg_event_t ALL_EVENTS[] = {
-    LBG_P1_A,    LBG_P1_B,    LBG_P1_UP, LBG_P1_RIGHT, LBG_P1_DOWN,
-    LBG_P1_LEFT, LBG_P2_A,    LBG_P2_B,  LBG_P2_UP,    LBG_P2_RIGHT,
-    LBG_P2_DOWN, LBG_P2_LEFT, -1,
-};
-
 ws2811_t LED_STRIP = {
     .freq = WS2811_TARGET_FREQ,
     .dmanum = LBG_LED_DMA,
@@ -74,7 +69,9 @@ static bool init_gpios(void) {
     }
 
     for (lbg_gpio_pin_t i = 0; ALL_PINS[i] != (lbg_gpio_pin_t)-1; i++) {
-        if (gpioSetMode(ALL_PINS[i], PI_INPUT) != 0) {
+        if (gpioSetMode(ALL_PINS[i], PI_INPUT) != 0 ||
+            gpioSetPullUpDown(ALL_PINS[i], PI_PUD_DOWN) != 0 ||
+            gpioGlitchFilter(ALL_PINS[i], 200) != 0) {
             lbg_errno = LBG_ERRNO_GPIO_SETMODE;
             lbg_errno_details.i = ALL_PINS[i];
             gpioTerminate();

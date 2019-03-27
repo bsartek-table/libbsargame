@@ -20,7 +20,7 @@
 #define LBG_WIDTH (13)                    /*!< Screen's width */
 #define LBG_HEIGHT (21)                   /*!< Screen's height */
 #define LBG_SIZE (LBG_HEIGHT * LBG_WIDTH) /*!< Screen's size */
-#define LBG_FRAMERATE (20)                /*!< Screen's framerate */
+#define LBG_FRAMERATE (10)                /*!< Screen's framerate */
 #define LBG_MAX_EVENTS                                                         \
     (1000) /*!< Maximum number of events stored in the queue */
 
@@ -51,21 +51,7 @@ typedef enum lbg_color_e {
     LBG_PINK = 0x00200010,      /*!< Pink */
 } lbg_color_t;
 
-/** Available events */
-typedef enum lbg_event_e {
-    LBG_P1_A,     /*!< First player's A button */
-    LBG_P1_B,     /*!< First player's B button */
-    LBG_P1_UP,    /*!< First player's UP joystick */
-    LBG_P1_RIGHT, /*!< First player's RIGHT joystick */
-    LBG_P1_DOWN,  /*!< First player's DOWN joystick */
-    LBG_P1_LEFT,  /*!< First player's LEFT joystick */
-    LBG_P2_A,     /*!< Second player's A button */
-    LBG_P2_B,     /*!< Second player's B button */
-    LBG_P2_UP,    /*!< Second player's UP joystick */
-    LBG_P2_RIGHT, /*!< Second player's RIGHT joystick */
-    LBG_P2_DOWN,  /*!< Second player's DOWN joystick */
-    LBG_P2_LEFT,  /*!< Second player's LEFT joystick */
-} lbg_event_t;
+typedef enum lbg_event_e lbg_event_t;
 
 /**
  * Errors
@@ -183,6 +169,9 @@ typedef enum lbg_gpio_pin_e {
 } lbg_gpio_pin_t;
 
 /** @cond NO_DOC */
+#define LBG_GPIO_LVL_DN (0)
+#define LBG_GPIO_LVL_UP (1)
+
 union lbg_errno_details_u {
     int i;
     char *s;
@@ -192,7 +181,34 @@ extern lbg_errno_t lbg_errno;
 extern union lbg_errno_details_u lbg_errno_details;
 extern const char *LBG_ERR_STRS[];
 extern lbg_gpio_pin_t ALL_PINS[];
-extern lbg_event_t ALL_EVENTS[];
 extern ws2811_t LED_STRIP;
 extern uint32_t LED_MAP[];
 /** @endcond */
+
+/** Available events */
+enum lbg_event_e {
+    LBG_P1_RL_A      = (LBG_GPIO_P1_A << 1) | LBG_GPIO_LVL_DN, /*!< First player's A button released */
+    LBG_P1_RL_B      = (LBG_GPIO_P1_B << 1) | LBG_GPIO_LVL_DN,  /*!< First player's B button released */
+    LBG_P1_RL_UP     = (LBG_GPIO_P1_UP << 1) | LBG_GPIO_LVL_DN,  /*!< First player's UP joystick released */
+    LBG_P1_RL_RIGHT  = (LBG_GPIO_P1_RIGHT << 1) | LBG_GPIO_LVL_DN,  /*!< First player's RIGHT joystick released */
+    LBG_P1_RL_DOWN   = (LBG_GPIO_P1_DOWN << 1) | LBG_GPIO_LVL_DN,  /*!< First player's DOWN joystick released */
+    LBG_P1_RL_LEFT   = (LBG_GPIO_P1_LEFT << 1) | LBG_GPIO_LVL_DN,  /*!< First player's LEFT joystick released */
+    LBG_P1_PR_A      = (LBG_GPIO_P1_A << 1) | LBG_GPIO_LVL_UP,  /*!< First player's A button pressed */
+    LBG_P1_PR_B      = (LBG_GPIO_P1_B << 1) | LBG_GPIO_LVL_UP,  /*!< First player's B button pressed */
+    LBG_P1_PR_UP     = (LBG_GPIO_P1_UP << 1) | LBG_GPIO_LVL_UP,  /*!< First player's UP joystick pressed */
+    LBG_P1_PR_RIGHT  = (LBG_GPIO_P1_RIGHT << 1) | LBG_GPIO_LVL_UP,  /*!< First player's RIGHT joystick pressed */
+    LBG_P1_PR_DOWN   = (LBG_GPIO_P1_DOWN << 1) | LBG_GPIO_LVL_UP,  /*!< First player's DOWN joystick pressed */
+    LBG_P1_PR_LEFT   = (LBG_GPIO_P1_LEFT << 1) | LBG_GPIO_LVL_UP,  /*!< First player's LEFT joystick pressed */
+    LBG_P2_RL_A      = (LBG_GPIO_P2_A << 1) | LBG_GPIO_LVL_DN,  /*!< Second player's A button released */
+    LBG_P2_RL_B      = (LBG_GPIO_P2_B << 1) | LBG_GPIO_LVL_DN,  /*!< Second player's B button released */
+    LBG_P2_RL_UP     = (LBG_GPIO_P2_UP << 1) | LBG_GPIO_LVL_DN,  /*!< Second player's UP joystick released */
+    LBG_P2_RL_RIGHT  = (LBG_GPIO_P2_RIGHT << 1) | LBG_GPIO_LVL_DN,  /*!< Second player's RIGHT joystick released */
+    LBG_P2_RL_DOWN   = (LBG_GPIO_P2_DOWN << 1) | LBG_GPIO_LVL_DN,  /*!< Second player's DOWN joystick released */
+    LBG_P2_RL_LEFT   = (LBG_GPIO_P2_LEFT << 1) | LBG_GPIO_LVL_DN,  /*!< Second player's LEFT joystick released */
+    LBG_P2_PR_A      = (LBG_GPIO_P2_A << 1) | LBG_GPIO_LVL_UP,  /*!< Second player's A button pressed */
+    LBG_P2_PR_B      = (LBG_GPIO_P2_B << 1) | LBG_GPIO_LVL_UP,  /*!< Second player's B button pressed */
+    LBG_P2_PR_UP     = (LBG_GPIO_P2_UP << 1) | LBG_GPIO_LVL_UP,  /*!< Second player's UP joystick pressed */
+    LBG_P2_PR_RIGHT  = (LBG_GPIO_P2_RIGHT << 1) | LBG_GPIO_LVL_UP,  /*!< Second player's RIGHT joystick pressed */
+    LBG_P2_PR_DOWN   = (LBG_GPIO_P2_DOWN << 1) | LBG_GPIO_LVL_UP,  /*!< Second player's DOWN joystick pressed */
+    LBG_P2_PR_LEFT   = (LBG_GPIO_P2_LEFT << 1) | LBG_GPIO_LVL_UP,  /*!< Second player's LEFT joystick pressed */
+};
