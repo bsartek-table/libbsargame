@@ -76,7 +76,6 @@ static bool move_snake(snake_t *snake, int dx, int dy) {
 }
 
 int main(void) {
-    // Initialization
     srand(time(NULL));
 
     if (!lbg_init()) {
@@ -85,43 +84,49 @@ int main(void) {
     }
     signal(SIGINT, clear_exit);
 
-    snake_t snake = {.px = {{0, 2}, {0, 1}, {0, 0}},
-                     .size = 3,
-                     .food = {rand() % LBG_WIDTH, rand() % LBG_HEIGHT}};
-
-    // Directions
-    int dx = 0, dy = 1;
-
     while (1) {
-        lbg_event_t e;
-        while (lbg_poll_event(&e)) {
-            switch (e) {
-            case LBG_P2_PR_UP:
-                dy = dy == 0 ? 1 : dy;
-                dx = 0;
-                break;
-            case LBG_P2_PR_DOWN:
-                dy = dy == 0 ? -1 : dy;
-                dx = 0;
-                break;
-            case LBG_P2_PR_RIGHT:
-                dx = dx == 0 ? 1 : dx;
-                dy = 0;
-                break;
-            case LBG_P2_PR_LEFT:
-                dx = dx == 0 ? -1 : dx;
-                dy = 0;
+        snake_t snake = {.px = {{0, 2}, {0, 1}, {0, 0}},
+                         .size = 3,
+                         .food = {rand() % LBG_WIDTH, rand() % LBG_HEIGHT}};
+
+        int dx = 0, dy = 1;
+
+        while (1) {
+            lbg_event_t e;
+            while (lbg_poll_event(&e)) {
+                switch (e) {
+                case LBG_P2_PR_UP:
+                    dy = dy == 0 ? 1 : dy;
+                    dx = 0;
+                    break;
+                case LBG_P2_PR_DOWN:
+                    dy = dy == 0 ? -1 : dy;
+                    dx = 0;
+                    break;
+                case LBG_P2_PR_RIGHT:
+                    dx = dx == 0 ? 1 : dx;
+                    dy = 0;
+                    break;
+                case LBG_P2_PR_LEFT:
+                    dx = dx == 0 ? -1 : dx;
+                    dy = 0;
+                    break;
+                }
+            }
+
+            if (!move_snake(&snake, dx, dy)) {
                 break;
             }
+            lbg_clear_screen();
+            draw_snake(&snake);
+            lbg_render();
         }
 
-        if (!move_snake(&snake, dx, dy)) {
-            break;
+        for (int i = 0; i < 10; i++) {
+            lbg_fill_screen(LBG_RED);
+            lbg_render();
+            lbg_clear_screen();
+            lbg_render();
         }
-        lbg_clear_screen();
-        draw_snake(&snake);
-        lbg_render();
     }
-
-    clear_exit(0);
 }
