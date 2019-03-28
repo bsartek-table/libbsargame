@@ -4,6 +4,8 @@
 
 #include "bsargame.h"
 
+static bool game_running = true;
+
 static inline int min(int a, int b) { return a < b ? a : b; }
 static inline int max(int a, int b) { return a > b ? a : b; }
 
@@ -23,12 +25,7 @@ static int mod(int a, int b) {
     return r < 0 ? r + b : r;
 }
 
-static void clear_exit(__attribute__((unused)) int s) {
-    lbg_clear_screen();
-    lbg_render();
-    sleep(1);
-    lbg_exit();
-}
+static void clear_exit(__attribute__((unused)) int s) { game_running = false; }
 
 static void gen_food(snake_t *snake) {
     pos_t head = snake->px[0];
@@ -84,14 +81,14 @@ int main(void) {
     }
     signal(SIGINT, clear_exit);
 
-    while (1) {
+    while (game_running) {
         snake_t snake = {.px = {{0, 2}, {0, 1}, {0, 0}},
                          .size = 3,
                          .food = {rand() % LBG_WIDTH, rand() % LBG_HEIGHT}};
 
         int dx = 0, dy = 1;
 
-        while (1) {
+        while (game_running) {
             lbg_event_t e;
             while (lbg_poll_event(&e)) {
                 switch (e) {
@@ -122,11 +119,13 @@ int main(void) {
             lbg_render();
         }
 
-        for (int i = 0; i < 10; i++) {
-            lbg_fill_screen(LBG_RED);
-            lbg_render();
-            lbg_clear_screen();
-            lbg_render();
+        if (game_running) {
+            lbg_blink_screen(LBG_RED, 10);
+            lbg_clear_events();
         }
     }
+
+    lbg_clear_screen();
+    lbg_render();
+    lbg_exit();
 }

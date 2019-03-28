@@ -63,6 +63,20 @@ void lbg_fill_screen(lbg_color_t color) {
 
 void lbg_clear_screen(void) { lbg_fill_screen(LBG_BLACK); }
 
+bool lbg_blink_screen(lbg_color_t color, int n) {
+    for (int i = 0; i < n; i++) {
+        lbg_fill_screen(color);
+        if (!lbg_render()) {
+            return false;
+        }
+        lbg_clear_screen();
+        if (!lbg_render()) {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool lbg_render(void) {
     ws2811_return_t ret;
 

@@ -143,6 +143,16 @@ void lbg_clear_screen(void);
 void lbg_fill_screen(lbg_color_t color);
 
 /**
+ * Blink the screen n time with color
+ *
+ * @param color
+ * @param n
+ *
+ * @returns bool
+ */
+bool lbg_blink_screen(lbg_color_t color, int n);
+
+/**
  * Poll the next event on the event queue and stores it in the first
  * parameter. Example:
  *
