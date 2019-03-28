@@ -32,7 +32,6 @@ static void delay(uint32_t ms) {
     elapsed.tv_nsec = (ms % 1000) * 1000000;
 
     do {
-
         tv.tv_sec = elapsed.tv_sec;
         tv.tv_nsec = elapsed.tv_nsec;
         e = nanosleep(&tv, &elapsed);
@@ -53,11 +52,16 @@ void lbg_update_screen(uint32_t *screen) {
     }
 }
 
-void lbg_clear_screen(void) {
+void lbg_fill_screen(lbg_color_t color) {
     uint32_t screen[LBG_SIZE] = {0};
 
+    for (int i = 0; i < LBG_SIZE; i++) {
+        screen[i] = color;
+    }
     lbg_update_screen(screen);
 }
+
+void lbg_clear_screen(void) { lbg_fill_screen(LBG_BLACK); }
 
 bool lbg_render(void) {
     ws2811_return_t ret;

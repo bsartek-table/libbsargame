@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <pigpio.h>
+#include <pigpiod_if2.h>
 #include <ws2811.h>
 
 /** @cond NO_DOC */
@@ -119,9 +119,9 @@ void lbg_update_screen(uint32_t *screen);
 
 /**
  * Will render the screen at the LBG_FRAMERATE framerate
- * 
+ *
  * @see lbg_update_screen
- * 
+ *
  * @returns none
  */
 bool lbg_render(void);
@@ -132,6 +132,15 @@ bool lbg_render(void);
  * @returns none
  */
 void lbg_clear_screen(void);
+
+/**
+ * Fill the screen with param color
+ *
+ * @param color
+ *
+ * @returns none
+ */
+void lbg_fill_screen(lbg_color_t color);
 
 /**
  * Poll the next event on the event queue and stores it in the first
@@ -146,6 +155,13 @@ void lbg_clear_screen(void);
 bool lbg_poll_event(lbg_event_t *event);
 
 /**
+ * Clears out the event queue
+ *
+ * @returns none
+ */
+void lbg_clear_events(void);
+
+/**
  * Print the last error on stderr.
  *
  * @see lbg_errno
@@ -157,10 +173,10 @@ void lbg_perror(void);
 
 /**
  * Put a pixel at the given x and y
- * 
+ *
  * @param x
  * @param y
- * 
+ *
  * @returns bool
  */
 void lbg_draw_pixel(int x, int y, lbg_color_t color);
@@ -199,32 +215,69 @@ extern const char *LBG_ERR_STRS[];
 extern lbg_gpio_pin_t ALL_PINS[];
 extern ws2811_t LED_STRIP;
 extern uint32_t LED_MAP[];
+extern int LBG_PIGPIOD_IF;
 /** @endcond */
 
 /** Available events */
 enum lbg_event_e {
-    LBG_P1_RL_A      = (LBG_GPIO_P1_A << 1) | LBG_GPIO_LVL_DN, /*!< First player's A button released */
-    LBG_P1_RL_B      = (LBG_GPIO_P1_B << 1) | LBG_GPIO_LVL_DN,  /*!< First player's B button released */
-    LBG_P1_RL_UP     = (LBG_GPIO_P1_UP << 1) | LBG_GPIO_LVL_DN,  /*!< First player's UP joystick released */
-    LBG_P1_RL_RIGHT  = (LBG_GPIO_P1_RIGHT << 1) | LBG_GPIO_LVL_DN,  /*!< First player's RIGHT joystick released */
-    LBG_P1_RL_DOWN   = (LBG_GPIO_P1_DOWN << 1) | LBG_GPIO_LVL_DN,  /*!< First player's DOWN joystick released */
-    LBG_P1_RL_LEFT   = (LBG_GPIO_P1_LEFT << 1) | LBG_GPIO_LVL_DN,  /*!< First player's LEFT joystick released */
-    LBG_P1_PR_A      = (LBG_GPIO_P1_A << 1) | LBG_GPIO_LVL_UP,  /*!< First player's A button pressed */
-    LBG_P1_PR_B      = (LBG_GPIO_P1_B << 1) | LBG_GPIO_LVL_UP,  /*!< First player's B button pressed */
-    LBG_P1_PR_UP     = (LBG_GPIO_P1_UP << 1) | LBG_GPIO_LVL_UP,  /*!< First player's UP joystick pressed */
-    LBG_P1_PR_RIGHT  = (LBG_GPIO_P1_RIGHT << 1) | LBG_GPIO_LVL_UP,  /*!< First player's RIGHT joystick pressed */
-    LBG_P1_PR_DOWN   = (LBG_GPIO_P1_DOWN << 1) | LBG_GPIO_LVL_UP,  /*!< First player's DOWN joystick pressed */
-    LBG_P1_PR_LEFT   = (LBG_GPIO_P1_LEFT << 1) | LBG_GPIO_LVL_UP,  /*!< First player's LEFT joystick pressed */
-    LBG_P2_RL_A      = (LBG_GPIO_P2_A << 1) | LBG_GPIO_LVL_DN,  /*!< Second player's A button released */
-    LBG_P2_RL_B      = (LBG_GPIO_P2_B << 1) | LBG_GPIO_LVL_DN,  /*!< Second player's B button released */
-    LBG_P2_RL_UP     = (LBG_GPIO_P2_UP << 1) | LBG_GPIO_LVL_DN,  /*!< Second player's UP joystick released */
-    LBG_P2_RL_RIGHT  = (LBG_GPIO_P2_RIGHT << 1) | LBG_GPIO_LVL_DN,  /*!< Second player's RIGHT joystick released */
-    LBG_P2_RL_DOWN   = (LBG_GPIO_P2_DOWN << 1) | LBG_GPIO_LVL_DN,  /*!< Second player's DOWN joystick released */
-    LBG_P2_RL_LEFT   = (LBG_GPIO_P2_LEFT << 1) | LBG_GPIO_LVL_DN,  /*!< Second player's LEFT joystick released */
-    LBG_P2_PR_A      = (LBG_GPIO_P2_A << 1) | LBG_GPIO_LVL_UP,  /*!< Second player's A button pressed */
-    LBG_P2_PR_B      = (LBG_GPIO_P2_B << 1) | LBG_GPIO_LVL_UP,  /*!< Second player's B button pressed */
-    LBG_P2_PR_UP     = (LBG_GPIO_P2_UP << 1) | LBG_GPIO_LVL_UP,  /*!< Second player's UP joystick pressed */
-    LBG_P2_PR_RIGHT  = (LBG_GPIO_P2_RIGHT << 1) | LBG_GPIO_LVL_UP,  /*!< Second player's RIGHT joystick pressed */
-    LBG_P2_PR_DOWN   = (LBG_GPIO_P2_DOWN << 1) | LBG_GPIO_LVL_UP,  /*!< Second player's DOWN joystick pressed */
-    LBG_P2_PR_LEFT   = (LBG_GPIO_P2_LEFT << 1) | LBG_GPIO_LVL_UP,  /*!< Second player's LEFT joystick pressed */
+    LBG_P1_RL_A = (LBG_GPIO_P1_A << 1) |
+                  LBG_GPIO_LVL_DN, /*!< First player's A button released */
+    LBG_P1_RL_B = (LBG_GPIO_P1_B << 1) |
+                  LBG_GPIO_LVL_DN, /*!< First player's B button released */
+    LBG_P1_RL_UP = (LBG_GPIO_P1_UP << 1) |
+                   LBG_GPIO_LVL_DN, /*!< First player's UP joystick released */
+    LBG_P1_RL_RIGHT =
+        (LBG_GPIO_P1_RIGHT << 1) |
+        LBG_GPIO_LVL_DN, /*!< First player's RIGHT joystick released */
+    LBG_P1_RL_DOWN =
+        (LBG_GPIO_P1_DOWN << 1) |
+        LBG_GPIO_LVL_DN, /*!< First player's DOWN joystick released */
+    LBG_P1_RL_LEFT =
+        (LBG_GPIO_P1_LEFT << 1) |
+        LBG_GPIO_LVL_DN, /*!< First player's LEFT joystick released */
+    LBG_P1_PR_A = (LBG_GPIO_P1_A << 1) |
+                  LBG_GPIO_LVL_UP, /*!< First player's A button pressed */
+    LBG_P1_PR_B = (LBG_GPIO_P1_B << 1) |
+                  LBG_GPIO_LVL_UP, /*!< First player's B button pressed */
+    LBG_P1_PR_UP = (LBG_GPIO_P1_UP << 1) |
+                   LBG_GPIO_LVL_UP, /*!< First player's UP joystick pressed */
+    LBG_P1_PR_RIGHT =
+        (LBG_GPIO_P1_RIGHT << 1) |
+        LBG_GPIO_LVL_UP, /*!< First player's RIGHT joystick pressed */
+    LBG_P1_PR_DOWN =
+        (LBG_GPIO_P1_DOWN << 1) |
+        LBG_GPIO_LVL_UP, /*!< First player's DOWN joystick pressed */
+    LBG_P1_PR_LEFT =
+        (LBG_GPIO_P1_LEFT << 1) |
+        LBG_GPIO_LVL_UP, /*!< First player's LEFT joystick pressed */
+    LBG_P2_RL_A = (LBG_GPIO_P2_A << 1) |
+                  LBG_GPIO_LVL_DN, /*!< Second player's A button released */
+    LBG_P2_RL_B = (LBG_GPIO_P2_B << 1) |
+                  LBG_GPIO_LVL_DN, /*!< Second player's B button released */
+    LBG_P2_RL_UP = (LBG_GPIO_P2_UP << 1) |
+                   LBG_GPIO_LVL_DN, /*!< Second player's UP joystick released */
+    LBG_P2_RL_RIGHT =
+        (LBG_GPIO_P2_RIGHT << 1) |
+        LBG_GPIO_LVL_DN, /*!< Second player's RIGHT joystick released */
+    LBG_P2_RL_DOWN =
+        (LBG_GPIO_P2_DOWN << 1) |
+        LBG_GPIO_LVL_DN, /*!< Second player's DOWN joystick released */
+    LBG_P2_RL_LEFT =
+        (LBG_GPIO_P2_LEFT << 1) |
+        LBG_GPIO_LVL_DN, /*!< Second player's LEFT joystick released */
+    LBG_P2_PR_A = (LBG_GPIO_P2_A << 1) |
+                  LBG_GPIO_LVL_UP, /*!< Second player's A button pressed */
+    LBG_P2_PR_B = (LBG_GPIO_P2_B << 1) |
+                  LBG_GPIO_LVL_UP, /*!< Second player's B button pressed */
+    LBG_P2_PR_UP = (LBG_GPIO_P2_UP << 1) |
+                   LBG_GPIO_LVL_UP, /*!< Second player's UP joystick pressed */
+    LBG_P2_PR_RIGHT =
+        (LBG_GPIO_P2_RIGHT << 1) |
+        LBG_GPIO_LVL_UP, /*!< Second player's RIGHT joystick pressed */
+    LBG_P2_PR_DOWN =
+        (LBG_GPIO_P2_DOWN << 1) |
+        LBG_GPIO_LVL_UP, /*!< Second player's DOWN joystick pressed */
+    LBG_P2_PR_LEFT =
+        (LBG_GPIO_P2_LEFT << 1) |
+        LBG_GPIO_LVL_UP, /*!< Second player's LEFT joystick pressed */
 };

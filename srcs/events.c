@@ -31,18 +31,21 @@ static lbg_event_t pop_event(void) {
     return evt;
 }
 
-static void gpioAlertF(int gpio, int level,
-                       __attribute__((unused)) uint32_t tick) {
-    if (level == 2) {
+static void gpio_cb(int pi, unsigned int gpio, unsigned int edge,
+                    uint32_t tick) {
+    (void)pi;
+    (void)tick;
+
+    if (edge == 2) {
         return;
     }
 
-    push_event((gpio << 1) | level);
+    push_event((gpio << 1) | edge);
 }
 
 static bool do_first_run(bool *first_run) {
     for (int i = 0; ALL_PINS[i] != (lbg_gpio_pin_t)-1; i++) {
-        if (gpioSetAlertFunc(ALL_PINS[i], gpioAlertF) != 0) {
+        if (callback(LBG_PIGPIOD_IF, ALL_PINS[i], EITHER_EDGE, gpio_cb) < 0) {
             return false;
         }
     }
@@ -66,3 +69,5 @@ bool lbg_poll_event(lbg_event_t *event) {
     *event = pop_event();
     return true;
 }
+
+void lbg_clear_events(void) { eventQ.count = 0; }

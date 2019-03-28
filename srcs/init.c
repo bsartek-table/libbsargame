@@ -1,7 +1,7 @@
 /** @file */
 
-#include <time.h>
 #include <errno.h>
+#include <time.h>
 
 #include "bsargame.h"
 
@@ -60,21 +60,22 @@ ws2811_t LED_STRIP = {
 };
 
 uint32_t LED_MAP[LBG_SIZE] = {0};
+int LBG_PIGPIOD_IF = -1;
 /** @endcond */
 
 static bool init_gpios(void) {
-    if (gpioInitialise() == PI_INIT_FAILED) {
+    if ((LBG_PIGPIOD_IF = pigpio_start(NULL, NULL)) != 0) {
         lbg_errno = LBG_ERRNO_GPIO_INIT;
         return false;
     }
 
     for (lbg_gpio_pin_t i = 0; ALL_PINS[i] != (lbg_gpio_pin_t)-1; i++) {
-        if (gpioSetMode(ALL_PINS[i], PI_INPUT) != 0 ||
-            gpioSetPullUpDown(ALL_PINS[i], PI_PUD_DOWN) != 0 ||
-            gpioGlitchFilter(ALL_PINS[i], 200) != 0) {
+        if (set_mode(LBG_PIGPIOD_IF, ALL_PINS[i], PI_INPUT) != 0 ||
+            set_pull_up_down(LBG_PIGPIOD_IF, ALL_PINS[i], PI_PUD_DOWN) != 0 ||
+            set_glitch_filter(LBG_PIGPIOD_IF, ALL_PINS[i], 200) != 0) {
             lbg_errno = LBG_ERRNO_GPIO_SETMODE;
             lbg_errno_details.i = ALL_PINS[i];
-            gpioTerminate();
+            pigpio_stop(LBG_PIGPIOD_IF);
             return false;
         }
     }
@@ -87,7 +88,7 @@ static bool init_leds(void) {
     if ((ret = ws2811_init(&LED_STRIP)) != WS2811_SUCCESS) {
         lbg_errno = LBG_ERRNO_LED_INIT;
         lbg_errno_details.s = (char *)ws2811_get_return_t_str(ret);
-        gpioTerminate();
+        pigpio_stop(LBG_PIGPIOD_IF);
         return false;
     }
 
@@ -119,6 +120,6 @@ bool lbg_init(void) {
 }
 
 void lbg_exit(void) {
-    gpioTerminate();
+    pigpio_stop(LBG_PIGPIOD_IF);
     ws2811_fini(&LED_STRIP);
 }
