@@ -51,6 +51,7 @@ typedef enum lbg_color_e {
     LBG_PINK = 0x00200010,      /*!< Pink */
 } lbg_color_t;
 
+/** @see enum lbg_event_e */
 typedef enum lbg_event_e lbg_event_t;
 
 /**
@@ -70,7 +71,6 @@ typedef enum lbg_errno_e {
  * Initialize library and dependencies. Must be called before anything else.
  *
  * @see lbg_exit
- * @see lbg_perror
  * @see lbg_errno
  * @see lbg_errno_details
  *
@@ -94,8 +94,6 @@ void lbg_exit(void);
  * first argument. The screen is an array of colors.
  *
  * @see lbg_update_screen
- * @see lbg_errno
- * @see lbg_errno_details
  *
  * @param screen An uint32_t allocated array of size LBG_SCREEN_SIZE
  *
@@ -107,8 +105,6 @@ void lbg_get_screen(uint32_t *screen);
  * Will update the screen with given parameters.
  *
  * @see lbg_get_screen
- * @see lbg_errno
- * @see lbg_errno_details
  *
  * @param screen An uint32_t array of size LBG_SCREEN_SIZE with desired
  * content.
@@ -121,6 +117,8 @@ void lbg_update_screen(uint32_t *screen);
  * Will render the screen at the LBG_FRAMERATE framerate
  *
  * @see lbg_update_screen
+ * @see lbg_errno
+ * @se lbg_errno_details
  *
  * @returns none
  */
@@ -143,9 +141,11 @@ void lbg_clear_screen(void);
 void lbg_fill_screen(lbg_color_t color);
 
 /**
- * Blink the screen n time with color
+ * Blinks the screen n time with color at the LBG_FRAMERATE rate
  *
- * @param color
+ * @see LBG_FRAMERATE
+ *
+ * @param color Desired color, either a lbg_color_t or an uint32
  * @param n
  *
  * @returns bool
@@ -182,10 +182,11 @@ void lbg_clear_events(void);
 void lbg_perror(void);
 
 /**
- * Put a pixel at the given x and y
+ * Put a pixel of the given color at the given x and y
  *
  * @param x
  * @param y
+ * @param color
  *
  * @returns bool
  */
